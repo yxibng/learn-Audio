@@ -7,11 +7,13 @@
 
 #import "ViewController.h"
 #import "RZRecorder.h"
+#import "RZPlayer.h"
 
 
 @interface ViewController ()
 
 @property (nonatomic, strong) RZRecorder *recorder;
+@property (nonatomic, strong) RZPlayer *player;
 @end
 
 @implementation ViewController
@@ -19,14 +21,22 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    _recorder = [[RZRecorder alloc] init];
-    [_recorder setup];
-    [_recorder start];
+    [self startPlayer];
 
 }
 
 
+- (void)startRecorder {
+    _recorder = [[RZRecorder alloc] init];
+    [_recorder setup];
+    [_recorder start];
+}
 
+- (void)startPlayer {
+    _player = [[RZPlayer alloc] init];
+    [_player setup];
+    [_player start];
+}
 
 
 - (void)setRepresentedObject:(id)representedObject {

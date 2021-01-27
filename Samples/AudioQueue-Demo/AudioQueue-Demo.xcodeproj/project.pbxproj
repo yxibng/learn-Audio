@@ -15,6 +15,7 @@
 		8668DC9325C0048200CC853C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8668DC9125C0048200CC853C /* Main.storyboard */; };
 		8668DC9625C0048200CC853C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8668DC9525C0048200CC853C /* main.m */; };
 		8668DCA225C0099D00CC853C /* RZRecorder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8668DCA125C0099D00CC853C /* RZRecorder.mm */; };
+		8668DD8025C151FF00CC853C /* RZPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8668DD7F25C151FF00CC853C /* RZPlayer.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,8 @@
 		8668DC9725C0048200CC853C /* AudioQueue_Demo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AudioQueue_Demo.entitlements; sourceTree = "<group>"; };
 		8668DCA025C0099D00CC853C /* RZRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RZRecorder.h; sourceTree = "<group>"; };
 		8668DCA125C0099D00CC853C /* RZRecorder.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RZRecorder.mm; sourceTree = "<group>"; };
+		8668DD7E25C151FF00CC853C /* RZPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RZPlayer.h; sourceTree = "<group>"; };
+		8668DD7F25C151FF00CC853C /* RZPlayer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RZPlayer.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,6 +98,8 @@
 			children = (
 				8668DCA025C0099D00CC853C /* RZRecorder.h */,
 				8668DCA125C0099D00CC853C /* RZRecorder.mm */,
+				8668DD7E25C151FF00CC853C /* RZPlayer.h */,
+				8668DD7F25C151FF00CC853C /* RZPlayer.mm */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -171,6 +176,7 @@
 				8668DCA225C0099D00CC853C /* RZRecorder.mm in Sources */,
 				8668DC9625C0048200CC853C /* main.m in Sources */,
 				8668DC8B25C0048000CC853C /* AppDelegate.m in Sources */,
+				8668DD8025C151FF00CC853C /* RZPlayer.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

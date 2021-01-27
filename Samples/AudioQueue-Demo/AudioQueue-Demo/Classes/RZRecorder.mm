@@ -67,7 +67,7 @@ static void HandleInputBuffer (void                                 *aqData,
 }
 
 
-void DeriveBufferSize(AudioQueueRef audioQueue,
+static void DeriveBufferSize(AudioQueueRef audioQueue,
                       AudioStreamBasicDescription  &ASBDescription,
                       Float64 seconds,
                       UInt32 *outBufferSize)
@@ -93,7 +93,7 @@ void DeriveBufferSize(AudioQueueRef audioQueue,
 }
 
 
-OSStatus SetMagicCookieForFile (AudioQueueRef inQueue, AudioFileID  inFile)
+static OSStatus SetMagicCookieForFile (AudioQueueRef inQueue, AudioFileID  inFile)
 {
     
     UInt32 cookieSize;
@@ -130,7 +130,7 @@ OSStatus SetMagicCookieForFile (AudioQueueRef inQueue, AudioFileID  inFile)
 
 
 
-OSStatus createAudioQueue() {
+static OSStatus createAudioQueue() {
 
     /*
      设置采集为aac，非pcm
@@ -203,6 +203,8 @@ OSStatus createAudioQueue() {
                                      kAudioFileFlags_EraseFile,
                                      &aqData.mAudioFile
                                      );
+    
+    CFRelease(audioFileURL);
     assert(status == noErr);
     if (status != noErr) {
         NSLog(@"AudioFileCreateWithURL failed, status = %d", status);
@@ -218,7 +220,7 @@ OSStatus createAudioQueue() {
 
 
 
-void startRecording() {
+static void startRecording() {
     
     if (!aqData.mQueue) {
         NSLog(@"startRecording: aqData.mQueue is not created!!!");
@@ -233,7 +235,7 @@ void startRecording() {
     aqData.mIsRunning = true;
 }
 
-void stopRecording() {
+static void stopRecording() {
     if (!aqData.mQueue) {
         NSLog(@"stopRecording: aqData.mQueue is not created!!!");
         return;
@@ -243,7 +245,7 @@ void stopRecording() {
 }
 
 
-void cleanup() {
+static void cleanup() {
     
     if (aqData.mQueue) {
         AudioQueueDispose (aqData.mQueue,true);
