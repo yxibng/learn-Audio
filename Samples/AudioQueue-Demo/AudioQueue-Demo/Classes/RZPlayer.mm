@@ -7,6 +7,7 @@
 
 #import "RZPlayer.h"
 #import <AudioToolbox/AudioToolbox.h>
+#import <OSLog/OSLog.h>
 
 static const int kNumberBuffers = 3;                              // 1
 struct AQPlayerState {
@@ -33,9 +34,8 @@ static void HandleOutputBuffer (void *aqData,
     }
     
     NSLog(@"😘😘HandleOutputBuffer");
-    
-    UInt32 numBytesReadFromFile;                              // 3
-    UInt32 numPackets = pAqData->mNumPacketsToRead;           // 4
+    UInt32 numBytesReadFromFile;
+    UInt32 numPackets = pAqData->mNumPacketsToRead;
     OSStatus status = AudioFileReadPacketData(pAqData->mAudioFile,
                                               false,
                                               &numBytesReadFromFile,
@@ -43,16 +43,20 @@ static void HandleOutputBuffer (void *aqData,
                                               pAqData->mCurrentPacket,
                                               &numPackets,
                                               inBuffer->mAudioData);
-    
+    if (status != noErr) {
+        os_log_error(OS_LOG_DEFAULT, "AudioFileReadPacketData, numPackets = %d", numPackets);
+    }
+
     assert(status == noErr);
     if (numPackets > 0) {
         inBuffer->mAudioDataByteSize = numBytesReadFromFile;
-        AudioQueueEnqueueBuffer (
+       status = AudioQueueEnqueueBuffer (
                                  pAqData->mQueue,
                                  inBuffer,
                                  (pAqData->mPacketDescs ? numPackets : 0),
                                  pAqData->mPacketDescs
                                  );
+        assert(status == noErr);
         pAqData->mCurrentPacket += numPackets;
     } else {
         AudioQueueStop (
@@ -64,42 +68,42 @@ static void HandleOutputBuffer (void *aqData,
 }
 
 static void DeriveBufferSize (
-                              AudioStreamBasicDescription &ASBDesc,                            // 1
-                              UInt32                      maxPacketSize,                       // 2
-                              Float64                     seconds,                             // 3
-                              UInt32                      *outBufferSize,                      // 4
-                              UInt32                      *outNumPacketsToRead                 // 5
-) {
-    static const int maxBufferSize = 0x50000;                        // 6
-    static const int minBufferSize = 0x4000;                         // 7
+                              AudioStreamBasicDescription &ASBDesc,
+                              UInt32                      maxPacketSize,
+                              Float64                     seconds,
+                              UInt32                      *outBufferSize,
+                              UInt32                      *outNumPacketsToRead)
+{
+    static const int maxBufferSize = 0x50000;
+    static const int minBufferSize = 0x4000;
     
-    if (ASBDesc.mFramesPerPacket != 0) {                             // 8
-        Float64 numPacketsForTime =
-        ASBDesc.mSampleRate / ASBDesc.mFramesPerPacket * seconds;
-        *outBufferSize = numPacketsForTime * maxPacketSize;
-    } else {                                                         // 9
-        *outBufferSize =
-        maxBufferSize > maxPacketSize ?
-        maxBufferSize : maxPacketSize;
+    if (ASBDesc.mFramesPerPacket != 0) {
+        //算出0.5秒有多少个包 21.53
+        Float64 numPacketsForTime = ASBDesc.mSampleRate / ASBDesc.mFramesPerPacket * seconds;
+        UInt32 bufferSizeForTime = numPacketsForTime * maxPacketSize;
+        NSLog(@"maxPack size = %d, pack number = %f, bufferSize = %d", maxPacketSize, numPacketsForTime, bufferSizeForTime);
+        *outBufferSize = bufferSizeForTime;
+    } else {
+        *outBufferSize = maxBufferSize > maxPacketSize ? maxBufferSize : maxPacketSize;
     }
     
-    if (                                                             // 10
-        *outBufferSize > maxBufferSize &&
-        *outBufferSize > maxPacketSize
-        )
+    if (*outBufferSize > maxBufferSize && *outBufferSize > maxPacketSize) {
         *outBufferSize = maxBufferSize;
-    else {                                                           // 11
-        if (*outBufferSize < minBufferSize)
+    } else {
+        if (*outBufferSize < minBufferSize) {
             *outBufferSize = minBufferSize;
+        }
     }
     
-    *outNumPacketsToRead = *outBufferSize / maxPacketSize;           // 12
+    int toRead = *outBufferSize / maxPacketSize;
+    *outNumPacketsToRead = toRead;// 12
 }
 
 
 static void startPlaying() {
     
     aqData.mIsRunning = true;
+    aqData.mCurrentPacket = 0;
     for (int i = 0; i<kNumberBuffers; i++) {
         HandleOutputBuffer (                                  // 7
                             &aqData,                                          // 8
@@ -134,22 +138,13 @@ static void stopPlaying() {
 
 static OSStatus setup() {
     //Obtaining a CFURL Object for an Audio File
-    const char *filePath = [[NSHomeDirectory() stringByAppendingPathComponent:@"audio.aac"] cStringUsingEncoding:NSUTF8StringEncoding];
-    CFURLRef audioFileURL = CFURLCreateFromFileSystemRepresentation (
-                                                                     NULL,
-                                                                     (const UInt8 *) filePath,
-                                                                     strlen (filePath),
-                                                                     false
-                                                                     );
-    
-    
-    
+
+    NSURL *fileURL = [[NSBundle mainBundle] URLForResource:@"audio" withExtension:@"aac"];
     //Opening an audio file for playback
-    OSStatus result = AudioFileOpenURL (audioFileURL,
+    OSStatus result = AudioFileOpenURL ((__bridge CFURLRef)fileURL,
                                         kAudioFileReadPermission,
                                         0,
                                         &aqData.mAudioFile);
-    CFRelease (audioFileURL);
     assert(result == noErr);
     if (result != noErr) {
         NSLog(@"AudioFileOpenURL failed, status = %d",result);
@@ -186,7 +181,7 @@ static OSStatus setup() {
     }
     
     //Setting Buffer Size and Number of Packets to Read
-    UInt32 maxPacketSize;
+    UInt32 maxPacketSize;//最大的包的大小
     UInt32 propertySize = sizeof (maxPacketSize);
     AudioFileGetProperty (
                           aqData.mAudioFile,
@@ -233,20 +228,21 @@ static OSStatus setup() {
     
     if (!couldNotGetProperty && cookieSize) {
         char* magicCookie = (char *) malloc (cookieSize);
-        AudioFileGetProperty (aqData.mAudioFile,
+       result = AudioFileGetProperty (aqData.mAudioFile,
                               kAudioFilePropertyMagicCookieData,
                               &cookieSize,
                               magicCookie);
+        assert(result == noErr);
         
-        AudioQueueSetProperty (aqData.mQueue,
+        result = AudioQueueSetProperty (aqData.mQueue,
                                kAudioQueueProperty_MagicCookie,
                                magicCookie,
                                cookieSize);
+        assert(result == noErr);
         free (magicCookie);
     }
     
     //Allocate and Prime Audio Queue Buffers
-    aqData.mCurrentPacket = 0;
     for (int i = 0; i < kNumberBuffers; ++i) {                // 2
        OSStatus status = AudioQueueAllocateBuffer (                            // 3
                                   aqData.mQueue,                                    // 4

@@ -16,6 +16,7 @@
 		8668DC9625C0048200CC853C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8668DC9525C0048200CC853C /* main.m */; };
 		8668DCA225C0099D00CC853C /* RZRecorder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8668DCA125C0099D00CC853C /* RZRecorder.mm */; };
 		8668DD8025C151FF00CC853C /* RZPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8668DD7F25C151FF00CC853C /* RZPlayer.mm */; };
+		86F9B38925C2C81700D646C4 /* audio.aac in Resources */ = {isa = PBXBuildFile; fileRef = 86F9B38825C2C81700D646C4 /* audio.aac */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +36,7 @@
 		8668DCA125C0099D00CC853C /* RZRecorder.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RZRecorder.mm; sourceTree = "<group>"; };
 		8668DD7E25C151FF00CC853C /* RZPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RZPlayer.h; sourceTree = "<group>"; };
 		8668DD7F25C151FF00CC853C /* RZPlayer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RZPlayer.mm; sourceTree = "<group>"; };
+		86F9B38825C2C81700D646C4 /* audio.aac */ = {isa = PBXFileReference; lastKnownFileType = file; path = audio.aac; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +81,7 @@
 		8668DC8825C0048000CC853C /* AudioQueue-Demo */ = {
 			isa = PBXGroup;
 			children = (
+				86F9B37E25C2AF6800D646C4 /* Resources */,
 				8668DC9F25C0094E00CC853C /* Classes */,
 				8668DC8925C0048000CC853C /* AppDelegate.h */,
 				8668DC8A25C0048000CC853C /* AppDelegate.m */,
@@ -102,6 +105,14 @@
 				8668DD7F25C151FF00CC853C /* RZPlayer.mm */,
 			);
 			path = Classes;
+			sourceTree = "<group>";
+		};
+		86F9B37E25C2AF6800D646C4 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				86F9B38825C2C81700D646C4 /* audio.aac */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -161,6 +172,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8668DC9025C0048200CC853C /* Assets.xcassets in Resources */,
+				86F9B38925C2C81700D646C4 /* audio.aac in Resources */,
 				8668DC9325C0048200CC853C /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
