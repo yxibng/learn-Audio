@@ -32,12 +32,10 @@ static void HandleOutputBuffer (void *aqData,
     if (!pAqData->mIsRunning) {
         return;
     }
-    
-    NSLog(@"😘😘HandleOutputBuffer");
     UInt32 numBytesReadFromFile;
     UInt32 numPackets = pAqData->mNumPacketsToRead;
-    OSStatus status = AudioFileReadPacketData(pAqData->mAudioFile,
-                                              false,
+    OSStatus status = AudioFileReadPackets(pAqData->mAudioFile,
+                                              true,
                                               &numBytesReadFromFile,
                                               pAqData->mPacketDescs,
                                               pAqData->mCurrentPacket,
@@ -74,8 +72,8 @@ static void DeriveBufferSize (
                               UInt32                      *outBufferSize,
                               UInt32                      *outNumPacketsToRead)
 {
-    static const int maxBufferSize = 0x50000;
-    static const int minBufferSize = 0x4000;
+    static const int maxBufferSize = 0x10000;// limit size to 64K
+    static const int minBufferSize = 0x4000;// limit size to 16K
     
     if (ASBDesc.mFramesPerPacket != 0) {
         //算出0.5秒有多少个包 21.53
@@ -181,7 +179,7 @@ static OSStatus setup() {
     }
     
     //Setting Buffer Size and Number of Packets to Read
-    UInt32 maxPacketSize;//最大的包的大小
+    UInt32 maxPacketSize;
     UInt32 propertySize = sizeof (maxPacketSize);
     AudioFileGetProperty (
                           aqData.mAudioFile,
@@ -243,12 +241,15 @@ static OSStatus setup() {
     }
     
     //Allocate and Prime Audio Queue Buffers
-    for (int i = 0; i < kNumberBuffers; ++i) {                // 2
-       OSStatus status = AudioQueueAllocateBuffer (                            // 3
-                                  aqData.mQueue,                                    // 4
-                                  aqData.bufferByteSize,                            // 5
-                                  &aqData.mBuffers[i]                               // 6
+    for (int i = 0; i < kNumberBuffers; ++i) {
+       OSStatus status = AudioQueueAllocateBuffer (
+                                  aqData.mQueue,
+                                  aqData.bufferByteSize,
+                                  &aqData.mBuffers[i]
                                   );
+        
+//        OSStatus status = AudioQueueAllocateBufferWithPacketDescriptions(aqData.mQueue, aqData.bufferByteSize, aqData.mNumPacketsToRead, &aqData.mBuffers[i]);
+        
         assert(status == noErr);
     }
     //Set an Audio Queue’s Playback Gain
