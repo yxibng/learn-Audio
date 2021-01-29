@@ -21,7 +21,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-
+    //test capture audio as aac
+    [self startRecorder];
+    
+    //test play aac audio file
     [self startPlayer];
 
 }
