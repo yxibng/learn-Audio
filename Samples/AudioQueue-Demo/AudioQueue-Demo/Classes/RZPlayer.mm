@@ -32,10 +32,10 @@ static void HandleOutputBuffer (void *aqData,
     if (!pAqData->mIsRunning) {
         return;
     }
-    UInt32 numBytesReadFromFile;
+    UInt32 numBytesReadFromFile = pAqData->bufferByteSize;
     UInt32 numPackets = pAqData->mNumPacketsToRead;
-    OSStatus status = AudioFileReadPackets(pAqData->mAudioFile,
-                                              true,
+    OSStatus status = AudioFileReadPacketData(pAqData->mAudioFile,
+                                              false,
                                               &numBytesReadFromFile,
                                               pAqData->mPacketDescs,
                                               pAqData->mCurrentPacket,
@@ -76,10 +76,8 @@ static void DeriveBufferSize (
     static const int minBufferSize = 0x4000;// limit size to 16K
     
     if (ASBDesc.mFramesPerPacket != 0) {
-        //算出0.5秒有多少个包 21.53
-        Float64 numPacketsForTime = ASBDesc.mSampleRate / ASBDesc.mFramesPerPacket * seconds;
+        UInt32 numPacketsForTime = ceil(ASBDesc.mSampleRate / ASBDesc.mFramesPerPacket * seconds);
         UInt32 bufferSizeForTime = numPacketsForTime * maxPacketSize;
-        NSLog(@"maxPack size = %d, pack number = %f, bufferSize = %d", maxPacketSize, numPacketsForTime, bufferSizeForTime);
         *outBufferSize = bufferSizeForTime;
     } else {
         *outBufferSize = maxBufferSize > maxPacketSize ? maxBufferSize : maxPacketSize;
@@ -94,7 +92,7 @@ static void DeriveBufferSize (
     }
     
     int toRead = *outBufferSize / maxPacketSize;
-    *outNumPacketsToRead = toRead;// 12
+    *outNumPacketsToRead = toRead;
 }
 
 
@@ -103,10 +101,10 @@ static void startPlaying() {
     aqData.mIsRunning = true;
     aqData.mCurrentPacket = 0;
     for (int i = 0; i<kNumberBuffers; i++) {
-        HandleOutputBuffer (                                  // 7
-                            &aqData,                                          // 8
-                            aqData.mQueue,                                    // 9
-                            aqData.mBuffers[i]                                // 10
+        HandleOutputBuffer (
+                            &aqData,
+                            aqData.mQueue,
+                            aqData.mBuffers[i]
                             );
     }
     
@@ -121,11 +119,6 @@ static void startPlaying() {
     NSLog(@"AudioQueuePrime: outNumberOfFramesPrepared = %d",outNumberOfFramesPrepared);
 
     AudioQueueStart (aqData.mQueue, NULL);
-    do {
-        CFRunLoopRunInMode (kCFRunLoopDefaultMode, 0.25, false);
-    } while (aqData.mIsRunning);
-
-    CFRunLoopRunInMode (kCFRunLoopDefaultMode, 1, false);
 }
 
 static void stopPlaying() {
@@ -247,9 +240,6 @@ static OSStatus setup() {
                                   aqData.bufferByteSize,
                                   &aqData.mBuffers[i]
                                   );
-        
-//        OSStatus status = AudioQueueAllocateBufferWithPacketDescriptions(aqData.mQueue, aqData.bufferByteSize, aqData.mNumPacketsToRead, &aqData.mBuffers[i]);
-        
         assert(status == noErr);
     }
     //Set an Audio Queue’s Playback Gain
