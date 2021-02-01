@@ -7,14 +7,18 @@
 
 #import "ViewController.h"
 #import "AudioUnitRecorder.h"
+#import "AUGraphRecorder.h"
 #import "AudioDevice.h"
 
-@interface ViewController ()<AudioUnitRecorderDelegate>
+static BOOL kUseGraph = YES;
 
-@property (nonatomic, strong) AudioUnitRecorder *recorder;
+
+@interface ViewController ()<AudioRecorderDelegate>
+
 @property (weak) IBOutlet NSPopUpButton *inputListButton;
 @property (nonatomic, strong) NSArray<AudioDevice *> *inputDevices;
 @property (nonatomic, strong) AudioDevice *currentInputDevice;
+@property (nonatomic, strong) id<AudioRecorderProtocol>recorder;
 
 @end
 
@@ -24,13 +28,18 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    _recorder = [[AudioUnitRecorder alloc] init];
+    
+    if (kUseGraph) {
+        _recorder = [[AUGraphRecorder alloc] init];
+    } else {
+        _recorder = [[AudioUnitRecorder alloc] init];
+    }
     _recorder.delegate = self;
 
     _currentInputDevice = [AudioDevice defaultInputDevice];
     _inputDevices = [AudioDevice inputDevices];
-    
-    
+
+
     [self.inputListButton removeAllItems];
     for (AudioDevice *device in _inputDevices) {
         NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:device.localizedName action:@selector(onClickInputDevice:) keyEquivalent:@""];
@@ -40,13 +49,13 @@
             [self.inputListButton selectItemAtIndex:index];
         }
     }
-    
+
     //set device
     [_recorder changeDevice:_currentInputDevice.deviceID];
 }
 
 
-- (void)audioRecorder:(AudioUnitRecorder *)audioRecorder didCaptureData:(void *)data sampleRate:(Float64)sampleRate length:(UInt32)length {
+- (void)audioRecorder:(id)audioRecorder didCaptureData:(void *)data sampleRate:(Float64)sampleRate length:(UInt32)length {
 
     NSLog(@"sample rate = %f, length = %d", sampleRate, length);
 }

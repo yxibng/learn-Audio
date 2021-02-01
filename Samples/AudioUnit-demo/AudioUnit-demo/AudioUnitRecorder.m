@@ -9,8 +9,8 @@
 #import "AudioUtil.h"
 #import <AVFoundation/AVFoundation.h>
 
-static int kInputBus = 1;
-static int kOutputBus = 0;
+static UInt32 kInputBus = 1;
+static UInt32 kOutputBus = 0;
 
 //设置20ms读写一次
 static NSTimeInterval kIODuration = 0.02;
