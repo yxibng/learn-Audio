@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		86AFDEFB25C7D4ED00BB87CA /* AudioUnitRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 86AFDEFA25C7D4ED00BB87CA /* AudioUnitRecorder.m */; };
+		86E4195C25C7EC3B0041CA0C /* AudioDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 86E4195B25C7EC3B0041CA0C /* AudioDevice.m */; };
 		86F9B3F125C4039E00D646C4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 86F9B3F025C4039E00D646C4 /* AppDelegate.m */; };
 		86F9B3F425C4039E00D646C4 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 86F9B3F325C4039E00D646C4 /* ViewController.m */; };
 		86F9B3F625C4039F00D646C4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 86F9B3F525C4039F00D646C4 /* Assets.xcassets */; };
@@ -19,6 +20,8 @@
 /* Begin PBXFileReference section */
 		86AFDEF925C7D4ED00BB87CA /* AudioUnitRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioUnitRecorder.h; sourceTree = "<group>"; };
 		86AFDEFA25C7D4ED00BB87CA /* AudioUnitRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioUnitRecorder.m; sourceTree = "<group>"; };
+		86E4195A25C7EC3B0041CA0C /* AudioDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioDevice.h; sourceTree = "<group>"; };
+		86E4195B25C7EC3B0041CA0C /* AudioDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioDevice.m; sourceTree = "<group>"; };
 		86F9B3EC25C4039E00D646C4 /* AudioUnit-demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AudioUnit-demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		86F9B3EF25C4039E00D646C4 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		86F9B3F025C4039E00D646C4 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -76,6 +79,8 @@
 				86F9B3FD25C4039F00D646C4 /* AudioUnit_demo.entitlements */,
 				86F9B41025C7A02D00D646C4 /* AudioUtil.h */,
 				86F9B41125C7A02D00D646C4 /* AudioUtil.m */,
+				86E4195A25C7EC3B0041CA0C /* AudioDevice.h */,
+				86E4195B25C7EC3B0041CA0C /* AudioDevice.m */,
 			);
 			path = "AudioUnit-demo";
 			sourceTree = "<group>";
@@ -152,6 +157,7 @@
 				86F9B3FC25C4039F00D646C4 /* main.m in Sources */,
 				86F9B3F125C4039E00D646C4 /* AppDelegate.m in Sources */,
 				86AFDEFB25C7D4ED00BB87CA /* AudioUnitRecorder.m in Sources */,
+				86E4195C25C7EC3B0041CA0C /* AudioDevice.m in Sources */,
 				86F9B41225C7A02D00D646C4 /* AudioUtil.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

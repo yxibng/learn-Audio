@@ -6,7 +6,6 @@
 //
 
 #import "AudioUnitRecorder.h"
-#import <AudioToolbox/AudioToolbox.h>
 #import "AudioUtil.h"
 #import <AVFoundation/AVFoundation.h>
 
@@ -16,10 +15,12 @@ static int kOutputBus = 0;
 //设置20ms读写一次
 static NSTimeInterval kIODuration = 0.02;
 
-
-
 struct AudioUnitRecorderInfo{
     AudioUnit audioUnit;
+    AudioStreamBasicDescription outputStreamDesc;
+    BOOL setupSuccess;
+    BOOL isRunning;
+    __weak AudioUnitRecorder *recorder;
 };
 
 static struct AudioUnitRecorderInfo recorderInfo;
@@ -28,7 +29,7 @@ static struct AudioUnitRecorderInfo recorderInfo;
 
 @implementation AudioUnitRecorder
 
-OSStatus renderCallback(void *inRefCon,
+static OSStatus renderCallback(void *inRefCon,
                         AudioUnitRenderActionFlags *ioActionFlags,
                         const AudioTimeStamp *inTimeStamp,
                         UInt32 inBusNumber,
@@ -47,14 +48,20 @@ OSStatus renderCallback(void *inRefCon,
     OSStatus status = AudioUnitRender(info->audioUnit, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, &list);
     assert(status == noErr);
     
-    UInt32 length = list.mBuffers[0].mDataByteSize;
-    NSLog(@"length = %d",length);
+    AudioUnitRecorder *recorder = info->recorder;
+    if ([recorder.delegate respondsToSelector:@selector(audioRecorder:didCaptureData:sampleRate:length:)]) {
+        [recorder.delegate audioRecorder:recorder didCaptureData:list.mBuffers[0].mData sampleRate:info->outputStreamDesc.mSampleRate length:list.mBuffers[0].mDataByteSize];
+    }
     
     return noErr;
 }
 
-OSStatus setup() {
+static OSStatus setup() {
 
+    if (recorderInfo.setupSuccess) {
+        return noErr;
+    }
+        
     AudioComponentDescription desc;
     desc.componentType = kAudioUnitType_Output;
     desc.componentSubType = kAudioUnitSubType_HALOutput;
@@ -118,15 +125,49 @@ OSStatus setup() {
     }
     
     
-    //set input device
+    status = setCurrentDevice(deviceID);
+    assert(status == noErr);
+    if (status != noErr) {
+        return status;
+    }
+    
+   
+    //set call back
+    AURenderCallbackStruct renderCallbackStruct;
+    renderCallbackStruct.inputProcRefCon = (void *)&(recorderInfo);
+    renderCallbackStruct.inputProc = renderCallback;
     status = AudioUnitSetProperty(recorderInfo.audioUnit,
+                                  kAudioOutputUnitProperty_SetInputCallback,
+                                  kAudioUnitScope_Global, kInputBus,
+                                  &renderCallbackStruct,
+                                  sizeof(AURenderCallbackStruct));
+    assert(status == noErr);
+    if (status != noErr) {
+        return status;
+    }
+    
+    status = AudioUnitInitialize(recorderInfo.audioUnit);
+    assert(status == noErr);
+    if (status != noErr) {
+        return status;
+    }
+    
+    recorderInfo.setupSuccess = YES;
+    
+    //init
+    return noErr;
+}
+
+
+
+static OSStatus setCurrentDevice(AudioDeviceID deviceID) {
+    //set input device
+   OSStatus status = AudioUnitSetProperty(recorderInfo.audioUnit,
                                   kAudioOutputUnitProperty_CurrentDevice,
                                   kAudioUnitScope_Global,
                                   kInputBus,
                                   &deviceID,
                                   sizeof(AudioDeviceID));
-    
-    
     
     //get mic output stream desc
     AudioStreamBasicDescription inputStreamDesc;
@@ -158,6 +199,9 @@ OSStatus setup() {
     if (status != noErr) {
         return status;
     }
+    //记录采集的数据格式
+    recorderInfo.outputStreamDesc = outputStreamDesc;
+    
     //get range
     UInt32 min, max;
     status = GetIOBufferFrameSizeRangeOfDevice(deviceID, &min, &max);
@@ -195,44 +239,32 @@ OSStatus setup() {
     }
     
     NSLog(@"sample rate = %f\n min = %d, max = %d\n current = %d, maxIO = %d",outputStreamDesc.mSampleRate, min, max, currentIOBufferFrameSize, maxIOBufferFrameSize);
-
-    //set call back
-    AURenderCallbackStruct renderCallbackStruct;
-    renderCallbackStruct.inputProcRefCon = (void *)&(recorderInfo);
-    renderCallbackStruct.inputProc = renderCallback;
-    status = AudioUnitSetProperty(recorderInfo.audioUnit,
-                                  kAudioOutputUnitProperty_SetInputCallback,
-                                  kAudioUnitScope_Global, kInputBus,
-                                  &renderCallbackStruct,
-                                  sizeof(AURenderCallbackStruct));
-    assert(status == noErr);
-    if (status != noErr) {
-        return status;
-    }
-    
-    status = AudioUnitInitialize(recorderInfo.audioUnit);
-    assert(status == noErr);
-    if (status != noErr) {
-        return status;
-    }
-    //init
     return noErr;
 }
 
 
-void start() {
+static void start() {
+    if (recorderInfo.isRunning) {
+        return;
+    }
     OSStatus status = AudioOutputUnitStart(recorderInfo.audioUnit);
     assert(status == noErr);
+    recorderInfo.isRunning = YES;
 }
 
-void stop() {
+static void stop() {
+    if (!recorderInfo.isRunning) {
+        return;
+    }
     OSStatus status = AudioOutputUnitStop(recorderInfo.audioUnit);
     assert(status == noErr);
+    recorderInfo.isRunning = NO;
 }
 
-void dispose() {
-   OSStatus status = AudioComponentInstanceDispose(recorderInfo.audioUnit);
+static void dispose() {
+    OSStatus status = AudioComponentInstanceDispose(recorderInfo.audioUnit);
     assert(status == noErr);
+    recorderInfo.setupSuccess = NO;
 }
 
 
@@ -244,11 +276,11 @@ void dispose() {
 {
     self = [super init];
     if (self) {
+        recorderInfo.recorder = self;
         setup();
     }
     return self;
 }
-
 
 
 - (void)start {
@@ -259,7 +291,18 @@ void dispose() {
     stop();
 }
 
+- (void)changeDevice:(AudioDeviceID)deviceID
+{
+    if (deviceID == kAudioDeviceUnknown) {
+        NSLog(@"changeDevice failed, device not exist");
+        return;
+    }
+    
+    if (!recorderInfo.setupSuccess) {
+        NSLog(@"changeDevice failed, audio unit not initialized");
 
-
+    }
+    setCurrentDevice(deviceID);
+}
 
 @end
