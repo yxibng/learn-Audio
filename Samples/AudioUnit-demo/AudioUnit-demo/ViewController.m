@@ -7,8 +7,9 @@
 
 #import "ViewController.h"
 #import "AudioUnitRecorder.h"
-#import "AUGraphRecorder.h"
+#import "AudioRecorder.h"
 #import "AudioDevice.h"
+#import "PCMConverter.h"
 
 static BOOL kUseGraph = YES;
 
@@ -20,6 +21,12 @@ static BOOL kUseGraph = YES;
 @property (nonatomic, strong) AudioDevice *currentInputDevice;
 @property (nonatomic, strong) id<AudioRecorderProtocol>recorder;
 
+
+@property (nonatomic, assign) AudioStreamBasicDescription destinationFormat;
+
+@property (nonatomic, strong) PCMConverter *converter;
+
+
 @end
 
 
@@ -30,7 +37,7 @@ static BOOL kUseGraph = YES;
     
     
     if (kUseGraph) {
-        _recorder = [[AUGraphRecorder alloc] init];
+        _recorder = [[AudioRecorder alloc] init];
     } else {
         _recorder = [[AudioUnitRecorder alloc] init];
     }
@@ -49,15 +56,38 @@ static BOOL kUseGraph = YES;
             [self.inputListButton selectItemAtIndex:index];
         }
     }
-
     //set device
     [_recorder changeDevice:_currentInputDevice.deviceID];
+    
+    
+    AudioStreamBasicDescription desc;
+    desc.mFormatID = kAudioFormatLinearPCM;
+    desc.mSampleRate = 16000;
+    desc.mChannelsPerFrame = 1;
+    desc.mBitsPerChannel = 16;
+    desc.mBytesPerFrame = 2;
+    desc.mBytesPerPacket = 2;
+    desc.mFramesPerPacket = 1;
+    desc.mFormatFlags = kAudioFormatFlagIsBigEndian | kAudioFormatFlagIsPacked | kAudioFormatFlagIsSignedInteger;
+    desc.mReserved = 0;
+    _destinationFormat = desc;
+    
 }
 
 
-- (void)audioRecorder:(id)audioRecorder didCaptureData:(void *)data sampleRate:(Float64)sampleRate length:(UInt32)length {
+- (void)audioRecorder:(id)audioRecorder didCaptureData:(void *)data length:(UInt32)length format:(AudioStreamBasicDescription)format {
 
-    NSLog(@"sample rate = %f, length = %d", sampleRate, length);
+    NSLog(@"sample rate = %f, length = %d", format.mSampleRate, length);
+    
+    if (!_converter) {
+        _converter = [[PCMConverter alloc] initWithSourceFormat:format destinationFormat:_destinationFormat];
+    }
+    
+    [_converter convertPcm:data length:length sourceFormat:format];
+
+    
+    
+
 }
 
 - (IBAction)onClickStart:(id)sender {

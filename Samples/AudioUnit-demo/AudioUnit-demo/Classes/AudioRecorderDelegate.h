@@ -15,8 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)audioRecorder:(id)audioRecorder
        didCaptureData:(void *)data
-           sampleRate:(Float64)sampleRate
-               length:(UInt32)length;
+               length:(UInt32)length
+               format:(AudioStreamBasicDescription)format;
 
 @end
 

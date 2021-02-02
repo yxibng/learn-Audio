@@ -49,8 +49,8 @@ static OSStatus renderCallback(void *inRefCon,
     assert(status == noErr);
     
     AudioUnitRecorder *recorder = info->recorder;
-    if ([recorder.delegate respondsToSelector:@selector(audioRecorder:didCaptureData:sampleRate:length:)]) {
-        [recorder.delegate audioRecorder:recorder didCaptureData:list.mBuffers[0].mData sampleRate:info->outputStreamDesc.mSampleRate length:list.mBuffers[0].mDataByteSize];
+    if ([recorder.delegate respondsToSelector:@selector(audioRecorder:didCaptureData:length:format:)]) {
+        [recorder.delegate audioRecorder:recorder didCaptureData:list.mBuffers[0].mData length:list.mBuffers[0].mDataByteSize format:info->outputStreamDesc];
     }
     
     return noErr;
