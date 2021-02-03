@@ -7,9 +7,8 @@
 
 #import "ViewController.h"
 #import "AudioUnitRecorder.h"
-#import "AudioRecorder.h"
+#import "AUGraphRecorder.h"
 #import "AudioDevice.h"
-#import "PCMConverter.h"
 
 static BOOL kUseGraph = YES;
 
@@ -24,9 +23,6 @@ static BOOL kUseGraph = YES;
 
 @property (nonatomic, assign) AudioStreamBasicDescription destinationFormat;
 
-@property (nonatomic, strong) PCMConverter *converter;
-
-
 @end
 
 
@@ -37,7 +33,7 @@ static BOOL kUseGraph = YES;
     
     
     if (kUseGraph) {
-        _recorder = [[AudioRecorder alloc] init];
+        _recorder = [[AUGraphRecorder alloc] init];
     } else {
         _recorder = [[AudioUnitRecorder alloc] init];
     }
@@ -79,11 +75,6 @@ static BOOL kUseGraph = YES;
 
     NSLog(@"sample rate = %f, length = %d", format.mSampleRate, length);
     
-    if (!_converter) {
-        _converter = [[PCMConverter alloc] initWithSourceFormat:format destinationFormat:_destinationFormat];
-    }
-    
-    [_converter convertPcm:data length:length sourceFormat:format];
 
     
     

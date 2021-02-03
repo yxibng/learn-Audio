@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		868E854725C8E4D2004481D5 /* PCMConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 868E854625C8E4D2004481D5 /* PCMConverter.m */; };
 		868E857E25C93CC0004481D5 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 868E857D25C93CC0004481D5 /* AppDelegate.m */; };
 		868E858125C93CC0004481D5 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 868E858025C93CC0004481D5 /* SceneDelegate.m */; };
 		868E858425C93CC0004481D5 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 868E858325C93CC0004481D5 /* ViewController.m */; };
@@ -17,7 +16,7 @@
 		868E858F25C93CC1004481D5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 868E858E25C93CC1004481D5 /* main.m */; };
 		86A1DA0325C9501E00CBE846 /* AudioSessionUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 86A1D9FF25C9501E00CBE846 /* AudioSessionUtil.m */; };
 		86A1DA1925C950D900CBE846 /* AudioRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 86A1DA1825C950D900CBE846 /* AudioRecorder.m */; };
-		86A1DA2425C9511E00CBE846 /* AUGraphRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 86A1DA2225C9511E00CBE846 /* AUGraphRecorder.m */; };
+		86A1DA3325CA455800CBE846 /* AUGraphRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 86A1DA3125CA455800CBE846 /* AUGraphRecorder.m */; };
 		86AFDEFB25C7D4ED00BB87CA /* AudioUnitRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 86AFDEFA25C7D4ED00BB87CA /* AudioUnitRecorder.m */; };
 		86E4195C25C7EC3B0041CA0C /* AudioDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 86E4195B25C7EC3B0041CA0C /* AudioDevice.m */; };
 		86F9B3F125C4039E00D646C4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 86F9B3F025C4039E00D646C4 /* AppDelegate.m */; };
@@ -29,8 +28,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		868E854525C8E4D2004481D5 /* PCMConverter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PCMConverter.h; sourceTree = "<group>"; };
-		868E854625C8E4D2004481D5 /* PCMConverter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PCMConverter.m; sourceTree = "<group>"; };
 		868E857A25C93CC0004481D5 /* AudioUnit-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AudioUnit-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		868E857C25C93CC0004481D5 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		868E857D25C93CC0004481D5 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -48,8 +45,8 @@
 		86A1DA0225C9501E00CBE846 /* AudioRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioRecorder.h; sourceTree = "<group>"; };
 		86A1DA1525C950BA00CBE846 /* AudioRecorderDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioRecorderDelegate.h; sourceTree = "<group>"; };
 		86A1DA1825C950D900CBE846 /* AudioRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioRecorder.m; sourceTree = "<group>"; };
-		86A1DA2225C9511E00CBE846 /* AUGraphRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AUGraphRecorder.m; sourceTree = "<group>"; };
-		86A1DA2325C9511E00CBE846 /* AUGraphRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AUGraphRecorder.h; sourceTree = "<group>"; };
+		86A1DA3125CA455800CBE846 /* AUGraphRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AUGraphRecorder.m; sourceTree = "<group>"; };
+		86A1DA3225CA455800CBE846 /* AUGraphRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AUGraphRecorder.h; sourceTree = "<group>"; };
 		86AFDEF925C7D4ED00BB87CA /* AudioUnitRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioUnitRecorder.h; sourceTree = "<group>"; };
 		86AFDEFA25C7D4ED00BB87CA /* AudioUnitRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioUnitRecorder.m; sourceTree = "<group>"; };
 		86E4195A25C7EC3B0041CA0C /* AudioDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioDevice.h; sourceTree = "<group>"; };
@@ -89,13 +86,11 @@
 		868E853F25C8E314004481D5 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				86A1DA2325C9511E00CBE846 /* AUGraphRecorder.h */,
-				86A1DA2225C9511E00CBE846 /* AUGraphRecorder.m */,
+				86A1DA3225CA455800CBE846 /* AUGraphRecorder.h */,
+				86A1DA3125CA455800CBE846 /* AUGraphRecorder.m */,
 				86A1DA1525C950BA00CBE846 /* AudioRecorderDelegate.h */,
 				86AFDEF925C7D4ED00BB87CA /* AudioUnitRecorder.h */,
 				86AFDEFA25C7D4ED00BB87CA /* AudioUnitRecorder.m */,
-				868E854525C8E4D2004481D5 /* PCMConverter.h */,
-				868E854625C8E4D2004481D5 /* PCMConverter.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -284,9 +279,8 @@
 			files = (
 				86F9B3F425C4039E00D646C4 /* ViewController.m in Sources */,
 				86F9B3FC25C4039F00D646C4 /* main.m in Sources */,
-				86A1DA2425C9511E00CBE846 /* AUGraphRecorder.m in Sources */,
-				868E854725C8E4D2004481D5 /* PCMConverter.m in Sources */,
 				86F9B3F125C4039E00D646C4 /* AppDelegate.m in Sources */,
+				86A1DA3325CA455800CBE846 /* AUGraphRecorder.m in Sources */,
 				86AFDEFB25C7D4ED00BB87CA /* AudioUnitRecorder.m in Sources */,
 				86E4195C25C7EC3B0041CA0C /* AudioDevice.m in Sources */,
 				86F9B41225C7A02D00D646C4 /* AudioUtil.m in Sources */,
