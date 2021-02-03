@@ -86,6 +86,10 @@
 		868E853F25C8E314004481D5 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				86F9B41025C7A02D00D646C4 /* AudioUtil.h */,
+				86F9B41125C7A02D00D646C4 /* AudioUtil.m */,
+				86E4195A25C7EC3B0041CA0C /* AudioDevice.h */,
+				86E4195B25C7EC3B0041CA0C /* AudioDevice.m */,
 				86A1DA3225CA455800CBE846 /* AUGraphRecorder.h */,
 				86A1DA3125CA455800CBE846 /* AUGraphRecorder.m */,
 				86A1DA1525C950BA00CBE846 /* AudioRecorderDelegate.h */,
@@ -156,10 +160,6 @@
 				86F9B3FA25C4039F00D646C4 /* Info.plist */,
 				86F9B3FB25C4039F00D646C4 /* main.m */,
 				86F9B3FD25C4039F00D646C4 /* AudioUnit_demo.entitlements */,
-				86F9B41025C7A02D00D646C4 /* AudioUtil.h */,
-				86F9B41125C7A02D00D646C4 /* AudioUtil.m */,
-				86E4195A25C7EC3B0041CA0C /* AudioDevice.h */,
-				86E4195B25C7EC3B0041CA0C /* AudioDevice.m */,
 			);
 			path = "AudioUnit-demo";
 			sourceTree = "<group>";
@@ -324,6 +324,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = VB8MVMJBU4;
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/AudioUnit-demo/Libs/libopus/include";
 				INFOPLIST_FILE = "AudioUnit-iOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -344,6 +345,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = VB8MVMJBU4;
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/AudioUnit-demo/Libs/libopus/include";
 				INFOPLIST_FILE = "AudioUnit-iOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -484,6 +486,11 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/AudioUnit-demo/Libs/opus/lib",
+					"$(PROJECT_DIR)/AudioUnit-demo/Libs/libopus/lib",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.duobeiyun.AudioUnit-demo";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -504,6 +511,11 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/AudioUnit-demo/Libs/opus/lib",
+					"$(PROJECT_DIR)/AudioUnit-demo/Libs/libopus/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.duobeiyun.AudioUnit-demo";

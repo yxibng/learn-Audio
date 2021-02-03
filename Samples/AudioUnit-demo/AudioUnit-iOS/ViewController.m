@@ -21,12 +21,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [[AudioSessionUtil sharedUtil] activeSession];
+    [AudioSessionUtil sharedUtil].delegate = self;
     _recorder = [[AudioRecorder alloc] initWithSampleRate: kSampleRate delegate: self];
     [_recorder start];
 }
 
 - (void)audioSessionUtil:(nonnull AudioSessionUtil *)audioSessionUtil receiveAudioServicesResetNotification:(nonnull NSNotification *)notification {
     NSLog(@"%s",__FUNCTION__);
+    [[AudioSessionUtil sharedUtil] activeSession];
     [self.recorder handleAudioServicesReset];
 }
 
