@@ -10,7 +10,7 @@
 #import "AUGraphRecorder.h"
 #import "AudioDevice.h"
 
-static BOOL kUseGraph = YES;
+static BOOL kUseGraph = NO;
 
 
 @interface ViewController ()<AudioRecorderDelegate>
@@ -31,11 +31,19 @@ static BOOL kUseGraph = YES;
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    /*
+     采集双声道，平面型
+     */
+    AudioConfig config = {
+        .channelCount = 2,
+        .interleaved = NO,
+        .ioDuration = 0.02
+    };
     
     if (kUseGraph) {
-        _recorder = [[AUGraphRecorder alloc] init];
+        _recorder = [[AUGraphRecorder alloc] initWithConfig:config delegate:self];
     } else {
-        _recorder = [[AudioUnitRecorder alloc] init];
+        _recorder = [[AudioUnitRecorder alloc] initWithConfig:config delegate:self];
     }
     _recorder.delegate = self;
 
@@ -71,15 +79,16 @@ static BOOL kUseGraph = YES;
 }
 
 
-- (void)audioRecorder:(id)audioRecorder didCaptureData:(void *)data length:(UInt32)length format:(AudioStreamBasicDescription)format {
-
-    NSLog(@"sample rate = %f, length = %d", format.mSampleRate, length);
+- (void)audioRecorder:(id)audioRecorder didCaptureAudioBufferList:(AudioBufferList *)audioBufferList format:(AudioStreamBasicDescription)format {
     
-
+    UInt32 channelCount = audioBufferList->mNumberBuffers;
+    UInt32 lengthPerChannel = audioBufferList->mBuffers[0].mDataByteSize;
     
+    NSLog(@"sample rate = %f, channelCount = %d, lengthPerChannel = %d", format.mSampleRate, channelCount, lengthPerChannel);
     
-
 }
+
+
 
 - (IBAction)onClickStart:(id)sender {
     [_recorder start];

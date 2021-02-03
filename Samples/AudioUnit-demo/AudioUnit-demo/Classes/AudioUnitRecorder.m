@@ -12,8 +12,6 @@
 static UInt32 kInputBus = 1;
 static UInt32 kOutputBus = 0;
 
-//设置20ms读写一次
-static NSTimeInterval kIODuration = 0.02;
 
 struct AudioUnitRecorderInfo{
     AudioUnit audioUnit;
@@ -40,19 +38,23 @@ static OSStatus renderCallback(void *inRefCon,
     struct AudioUnitRecorderInfo *info = (struct AudioUnitRecorderInfo *)inRefCon;
     
     
-    AudioBufferList list;
-    list.mNumberBuffers = 1;
-    list.mBuffers[0].mData = NULL;
-    list.mBuffers[0].mDataByteSize = 0;
+    UInt32 channels = info->outputStreamDesc.mChannelsPerFrame;
+    AudioBufferList *list = malloc(sizeof(AudioBufferList) + sizeof(AudioBuffer) * (channels - 1));
+    list->mNumberBuffers = channels;
+    for (UInt32 i = 0; i< channels; i++) {
+        list->mBuffers[i].mData = NULL;
+        list->mBuffers[i].mDataByteSize = 0;
+    }
+
     
-    OSStatus status = AudioUnitRender(info->audioUnit, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, &list);
+    OSStatus status = AudioUnitRender(info->audioUnit, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, list);
     assert(status == noErr);
     
     AudioUnitRecorder *recorder = info->recorder;
-    if ([recorder.delegate respondsToSelector:@selector(audioRecorder:didCaptureData:length:format:)]) {
-        [recorder.delegate audioRecorder:recorder didCaptureData:list.mBuffers[0].mData length:list.mBuffers[0].mDataByteSize format:info->outputStreamDesc];
+    if ([recorder.delegate respondsToSelector:@selector(audioRecorder:didCaptureAudioBufferList:format:)]) {
+        [recorder.delegate audioRecorder:recorder didCaptureAudioBufferList:list format:info->outputStreamDesc];
     }
-    
+    free(list);
     return noErr;
 }
 
@@ -184,7 +186,9 @@ static OSStatus setCurrentDevice(AudioDeviceID deviceID) {
     }
     
     //set stream desc (ouptput sampleRate = input sampleRate)
-    AudioStreamBasicDescription outputStreamDesc = *([[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatInt16 sampleRate:16000 channels:1 interleaved:YES].streamDescription);
+    UInt32 channelCount = recorderInfo.recorder.config.channelCount;
+    BOOL interleaved = recorderInfo.recorder.config.interleaved;
+    AudioStreamBasicDescription outputStreamDesc = *([[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatInt16 sampleRate:16000 channels:channelCount interleaved:interleaved].streamDescription);
     /*
      如果采样率和输入的采用不同，在audioRender的时候，会失败 报错 -10863
      */
@@ -227,7 +231,14 @@ static OSStatus setCurrentDevice(AudioDeviceID deviceID) {
     }
     
     //set current
-    UInt32 ioSize = ceil(kIODuration * outputStreamDesc.mSampleRate);
+    NSTimeInterval ioDuration = recorderInfo.recorder.config.ioDuration;
+    UInt32 ioSize = ceil(ioDuration * outputStreamDesc.mSampleRate);
+    if (ioSize > max) {
+        ioSize = max;
+    }
+    if (ioSize < min) {
+        ioSize = min;
+    }
     SetCurrentIOBufferFrameSizeOfDevice(deviceID, ioSize);
     
     //get current
@@ -272,10 +283,12 @@ static void dispose() {
     dispose();
 }
 
-- (instancetype)init
+- (instancetype)initWithConfig:(AudioConfig)config delegate:(id<AudioRecorderDelegate>)delegate
 {
     self = [super init];
     if (self) {
+        _config = config;
+        _delegate = delegate;
         recorderInfo.recorder = self;
         setup();
     }
