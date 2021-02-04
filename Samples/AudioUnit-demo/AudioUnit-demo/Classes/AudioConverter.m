@@ -108,9 +108,13 @@ static enum AVSampleFormat ff_formatFromStreamDesc(AudioStreamBasicDescription s
         int channleCount = destinationFormat.mChannelsPerFrame;
         BOOL isPlanar = (destinationFormat.mFormatFlags & kAudioFormatFlagIsNonInterleaved) > 0;
      
+        enum AVSampleFormat format = ff_formatFromStreamDesc(destinationFormat);
+        _converterInfo.destination.sample_fmt = format;
+        
         _converterInfo.destination.channelCount = channleCount;
         _converterInfo.destination.sampleRate = sampleRate;
         _converterInfo.destination.isPlanar = isPlanar;
+        
 
     }
     return self;
@@ -144,7 +148,6 @@ static enum AVSampleFormat ff_formatFromStreamDesc(AudioStreamBasicDescription s
         if (ret < 0) {
             return;
         }
-    
         //alloc context
         _converterInfo.swr_ctx = swr_alloc();
         if (!_converterInfo.swr_ctx) {
@@ -152,11 +155,13 @@ static enum AVSampleFormat ff_formatFromStreamDesc(AudioStreamBasicDescription s
         }
         
         //config context
-        av_opt_set_int(_converterInfo.swr_ctx, "in_channel_layout",    av_get_default_channel_layout (_converterInfo.source.channelCount), 0);
+        int64_t src_ch_layout = av_get_default_channel_layout (_converterInfo.source.channelCount);
+        av_opt_set_int(_converterInfo.swr_ctx, "in_channel_layout", src_ch_layout, 0);
         av_opt_set_int(_converterInfo.swr_ctx, "in_sample_rate",       _converterInfo.source.sampleRate, 0);
         av_opt_set_sample_fmt(_converterInfo.swr_ctx, "in_sample_fmt", _converterInfo.source.sample_fmt, 0);
 
-        av_opt_set_int(_converterInfo.swr_ctx, "out_channel_layout",    av_get_default_channel_layout (_converterInfo.destination.channelCount), 0);
+        int64_t dst_ch_layout = av_get_default_channel_layout (_converterInfo.destination.channelCount);
+        av_opt_set_int(_converterInfo.swr_ctx, "out_channel_layout", dst_ch_layout, 0);
         av_opt_set_int(_converterInfo.swr_ctx, "out_sample_rate",       _converterInfo.destination.sampleRate, 0);
         av_opt_set_sample_fmt(_converterInfo.swr_ctx, "out_sample_fmt", _converterInfo.destination.sample_fmt, 0);
         

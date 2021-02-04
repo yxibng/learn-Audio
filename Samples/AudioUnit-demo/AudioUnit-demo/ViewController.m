@@ -66,8 +66,6 @@ static BOOL kUseGraph = NO;
     
 
     _destinationFormat = *([[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatInt16 sampleRate:16000 channels:2 interleaved:YES].streamDescription);
-    
-    
     _audioConverter = [[AudioConverter alloc] initWithDestinationFormat:_destinationFormat];
     
 }
