@@ -10,6 +10,7 @@
 #import "AUGraphRecorder.h"
 #import "AudioDevice.h"
 #import "AudioConverter.h"
+#import <AVFoundation/AVFoundation.h>
 
 static BOOL kUseGraph = NO;
 
@@ -63,33 +64,22 @@ static BOOL kUseGraph = NO;
     [_recorder changeDevice:_currentInputDevice.deviceID];
     
     
-    AudioStreamBasicDescription desc;
-    desc.mFormatID = kAudioFormatLinearPCM;
-    desc.mSampleRate = 16000;
-    desc.mChannelsPerFrame = 1;
-    desc.mBitsPerChannel = 16;
-    desc.mBytesPerFrame = 2;
-    desc.mBytesPerPacket = 2;
-    desc.mFramesPerPacket = 1;
-    desc.mFormatFlags = kAudioFormatFlagIsBigEndian | kAudioFormatFlagIsPacked | kAudioFormatFlagIsSignedInteger;
-    desc.mReserved = 0;
-    _destinationFormat = desc;
+
+    _destinationFormat = *([[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatInt16 sampleRate:16000 channels:2 interleaved:YES].streamDescription);
     
     
-    _audioConverter = [[AudioConverter alloc] init];
+    _audioConverter = [[AudioConverter alloc] initWithDestinationFormat:_destinationFormat];
     
 }
 
 
-- (void)audioRecorder:(id)audioRecorder didCaptureAudioBufferList:(AudioBufferList *)audioBufferList format:(AudioStreamBasicDescription)format {
+- (void)audioRecorder:(id)audioRecorder didCaptureAudioBufferList:(AudioBufferList *)audioBufferList format:(AudioStreamBasicDescription)format sampleCount:(int)sampleCount {
     
-    UInt32 channelCount = audioBufferList->mNumberBuffers;
-    UInt32 lengthPerChannel = audioBufferList->mBuffers[0].mDataByteSize;
+//    UInt32 channelCount = audioBufferList->mNumberBuffers;
+//    UInt32 lengthPerChannel = audioBufferList->mBuffers[0].mDataByteSize;
     
-    NSLog(@"sample rate = %f, channelCount = %d, lengthPerChannel = %d", format.mSampleRate, channelCount, lengthPerChannel);
-    
-    AudioBufferList dstList;
-    [_audioConverter convertAuidoBufferList:audioBufferList sourceFormat:format destinationAudioBufferList:&dstList destinationFormat:_destinationFormat];
+//    NSLog(@"sample rate = %f, channelCount = %d, lengthPerChannel = %d", format.mSampleRate, channelCount, lengthPerChannel);
+    [_audioConverter convertAuidoBufferList:audioBufferList sourceFormat:format sourceSampleCount:sampleCount];
     
     
 }

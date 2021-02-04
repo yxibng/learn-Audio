@@ -31,7 +31,7 @@ typedef struct {
 @optional
 
 - (void)audioRecorder:(id)audioRecorder didCaptureAudioBufferList:(AudioBufferList *)audioBufferList
-               format:(AudioStreamBasicDescription)format;
+               format:(AudioStreamBasicDescription)format sampleCount:(int)sampleCount;
 @end
 
 @protocol AudioRecorderProtocol <NSObject>

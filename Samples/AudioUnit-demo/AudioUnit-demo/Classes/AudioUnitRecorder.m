@@ -51,8 +51,8 @@ static OSStatus renderCallback(void *inRefCon,
     assert(status == noErr);
     
     AudioUnitRecorder *recorder = info->recorder;
-    if ([recorder.delegate respondsToSelector:@selector(audioRecorder:didCaptureAudioBufferList:format:)]) {
-        [recorder.delegate audioRecorder:recorder didCaptureAudioBufferList:list format:info->outputStreamDesc];
+    if ([recorder.delegate respondsToSelector:@selector(audioRecorder:didCaptureAudioBufferList:format:sampleCount:)]) {
+        [recorder.delegate audioRecorder:recorder didCaptureAudioBufferList:list format:info->outputStreamDesc sampleCount:inNumberFrames];
     }
     free(list);
     return noErr;

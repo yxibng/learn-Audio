@@ -24,14 +24,15 @@ typedef struct {
      */
     int lineSize;
     //声道数
-    int64_t ch_layout;
+    int channelCount;
     //采样率
     int sampleRate;
     //采样个数
     uint64_t nb_samples;
     //for output
     uint64_t max_nb_samples;
-    
+    //是否是平面类型
+    BOOL isPlanar;
     //采样位深,平面或交错（int16,int32, int64, float32, float64）
     enum AVSampleFormat sample_fmt;
 } AudioData;
@@ -41,7 +42,7 @@ typedef struct {
     SwrContext *swr_ctx;
     AudioData source;
     AudioData destination;
-    
+    BOOL setupSuccess;
 } AudioConverterInfo;
 
 
@@ -96,110 +97,148 @@ static enum AVSampleFormat ff_formatFromStreamDesc(AudioStreamBasicDescription s
     return AV_SAMPLE_FMT_U8;
 }
 
+
+
+
+
+- (instancetype)initWithDestinationFormat:(AudioStreamBasicDescription)destinationFormat {
+    
+    if (self = [super init]) {
+        int sampleRate = (int)destinationFormat.mSampleRate;
+        int channleCount = destinationFormat.mChannelsPerFrame;
+        BOOL isPlanar = (destinationFormat.mFormatFlags & kAudioFormatFlagIsNonInterleaved) > 0;
+     
+        _converterInfo.destination.channelCount = channleCount;
+        _converterInfo.destination.sampleRate = sampleRate;
+        _converterInfo.destination.isPlanar = isPlanar;
+
+    }
+    return self;
+    
+    
+}
+
+
 - (void)convertAuidoBufferList:(AudioBufferList *)sourceAudioBufferList
                   sourceFormat:(AudioStreamBasicDescription)sourceFormat
-    destinationAudioBufferList:(AudioBufferList *)destinationAudioBufferList
-             destinationFormat:(AudioStreamBasicDescription)destinationFormat
+             sourceSampleCount:(int)sourceSampleCount
 {
-    
-    uint8_t **source = NULL;
-    int sourceLineSize = 0;
-    int sourceSampleRate = (int)sourceFormat.mSampleRate;
-    int sourceChannleCount = sourceFormat.mChannelsPerFrame;
-    BOOL isPlanar = (sourceFormat.mFormatFlags & kAudioFormatFlagIsNonInterleaved) > 0;
-    int64_t nb_samples = 0;
-    if (isPlanar) {
-        nb_samples = sourceAudioBufferList->mBuffers[0].mDataByteSize / (sourceFormat.mBitsPerChannel / 8);
-    } else {
-        nb_samples = sourceAudioBufferList->mBuffers[0].mDataByteSize / sourceFormat.mBytesPerFrame;
-    }
-    
-    enum AVSampleFormat format = ff_formatFromStreamDesc(sourceFormat);
-    int ret = av_samples_alloc_array_and_samples(&source, &sourceLineSize, sourceChannleCount, (int)nb_samples, format, 0);
-    assert(ret >= 0);
-    
-    //fill data
-    for (UInt32 i = 0; i < sourceAudioBufferList->mNumberBuffers ; i++) {
-        memcpy(source[i], sourceAudioBufferList->mBuffers[i].mData, sourceAudioBufferList->mBuffers[i].mDataByteSize);
-    }
-    
-    
-    uint8_t **dst = NULL;
-    int dstLineSize = 0;
-    int dstChannelCount = destinationFormat.mChannelsPerFrame;
-    int64_t dst_nb_samples = 0;
-    int64_t dst_max_nb_samples = 0;
-    BOOL dstIsPlanar = (destinationFormat.mFormatFlags & kAudioFormatFlagIsNonInterleaved) > 0;
-    enum AVSampleFormat dst_format = ff_formatFromStreamDesc(destinationFormat);
-    int dstSampleRate = (int)destinationFormat.mSampleRate;
-    
-    SwrContext *context = swr_alloc();
-    if (!context) {
-        return;
-    }
-    
-    av_opt_set_int(context, "in_channel_layout",    AV_CH_LAYOUT_STEREO, 0);
-    av_opt_set_int(context, "in_sample_rate",       sourceSampleRate, 0);
-    av_opt_set_sample_fmt(context, "in_sample_fmt", format, 0);
-
-    av_opt_set_int(context, "out_channel_layout",    AV_CH_LAYOUT_STEREO, 0);
-    av_opt_set_int(context, "out_sample_rate",       dstSampleRate, 0);
-    av_opt_set_sample_fmt(context, "out_sample_fmt", dst_format, 0);
-
-    
-    ret = swr_init(context);
-    assert(ret >= 0);
-    
-    
-    
-    //计算目标采样个数
-    dst_nb_samples = av_rescale_rnd(nb_samples, dstSampleRate, sourceSampleRate, AV_ROUND_UP);
-    dst_max_nb_samples = dst_nb_samples;
-    
-    
-    ret = av_samples_alloc_array_and_samples(&dst, &dstLineSize, dstChannelCount, (int)dst_nb_samples, dst_format, 0);
-    assert(ret >= 0);
-    
-    dst_nb_samples = av_rescale_rnd(swr_get_delay(context, sourceSampleRate) + nb_samples, dstSampleRate, sourceSampleRate, AV_ROUND_UP);
-    
-    if (dst_nb_samples > dst_max_nb_samples) {
-        av_freep(&dst[0]);
-        av_freep(&dst);
-        ret = av_samples_alloc_array_and_samples(&dst, &dstLineSize, dstChannelCount, (int)dst_max_nb_samples, dst_format, 0);
+    if (!_converterInfo.setupSuccess) {
+        //setup
+        _converterInfo.source.nb_samples = sourceSampleCount;
+        enum AVSampleFormat format = ff_formatFromStreamDesc(sourceFormat);
+        _converterInfo.source.sample_fmt = format;
+        BOOL isPlanar = (sourceFormat.mFormatFlags & kAudioFormatFlagIsNonInterleaved) > 0;
+        _converterInfo.source.isPlanar = isPlanar;
+        int sourceChannleCount = sourceFormat.mChannelsPerFrame;
+        _converterInfo.source.channelCount = sourceChannleCount;
+        _converterInfo.source.sampleRate = sourceFormat.mSampleRate;
+        //alloc memory for source
+        int ret = av_samples_alloc_array_and_samples(&_converterInfo.source.data,
+                                                     &_converterInfo.source.lineSize,
+                                                     sourceChannleCount,
+                                                     sourceSampleCount,
+                                                     format,
+                                                     0);
         assert(ret >= 0);
-        dst_nb_samples = dst_max_nb_samples;
+        if (ret < 0) {
+            return;
+        }
+    
+        //alloc context
+        _converterInfo.swr_ctx = swr_alloc();
+        if (!_converterInfo.swr_ctx) {
+            return;
+        }
+        
+        //config context
+        av_opt_set_int(_converterInfo.swr_ctx, "in_channel_layout",    av_get_default_channel_layout (_converterInfo.source.channelCount), 0);
+        av_opt_set_int(_converterInfo.swr_ctx, "in_sample_rate",       _converterInfo.source.sampleRate, 0);
+        av_opt_set_sample_fmt(_converterInfo.swr_ctx, "in_sample_fmt", _converterInfo.source.sample_fmt, 0);
+
+        av_opt_set_int(_converterInfo.swr_ctx, "out_channel_layout",    av_get_default_channel_layout (_converterInfo.destination.channelCount), 0);
+        av_opt_set_int(_converterInfo.swr_ctx, "out_sample_rate",       _converterInfo.destination.sampleRate, 0);
+        av_opt_set_sample_fmt(_converterInfo.swr_ctx, "out_sample_fmt", _converterInfo.destination.sample_fmt, 0);
+        
+        ret = swr_init(_converterInfo.swr_ctx);
+        assert(ret >= 0);
+        if (ret < 0) {
+            av_freep(&_converterInfo.source.data[0]);
+            av_freep(&_converterInfo.source.data);
+            swr_free(&_converterInfo.swr_ctx);
+            return;
+        }
+        //alloc memory for destination
+        //计算目标采样个数
+        int dst_nb_samples = (int)av_rescale_rnd(_converterInfo.source.nb_samples,
+                                            _converterInfo.destination.sampleRate,
+                                            _converterInfo.source.sampleRate,
+                                            AV_ROUND_UP);
+        _converterInfo.destination.nb_samples = dst_nb_samples;
+        _converterInfo.destination.max_nb_samples = dst_nb_samples;
+        //开辟空间
+        ret = av_samples_alloc_array_and_samples(&_converterInfo.destination.data,
+                                                 &_converterInfo.destination.lineSize,
+                                                 (int)av_get_default_channel_layout (_converterInfo.destination.channelCount),
+                                                 (int)_converterInfo.destination.nb_samples,
+                                                 _converterInfo.destination.sample_fmt,
+                                                 0);
+        assert(ret >= 0);
+        if (ret < 0) {
+            av_freep(&_converterInfo.source.data[0]);
+            av_freep(&_converterInfo.source.data);
+            swr_free(&_converterInfo.swr_ctx);
+            return;
+        }
+        _converterInfo.setupSuccess = YES;
     }
-    
-    int out_nb_samples = swr_convert(context, dst, (int)dst_nb_samples, (const uint8_t **)source, nb_samples);
-    assert(ret >= 0);
-    
-    
-    int dstBufferSize = av_samples_get_buffer_size(&dstLineSize, dstChannelCount, out_nb_samples, dst_format, 0);
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    //fill data
+    if (_converterInfo.source.isPlanar) {
+        for (int i = 0; i< _converterInfo.source.channelCount; i++) {
+            memcpy(_converterInfo.source.data[i], sourceAudioBufferList->mBuffers[i].mData, sourceAudioBufferList->mBuffers[i].mDataByteSize);
+        }
+    } else {
+        memcpy(_converterInfo.source.data[0], sourceAudioBufferList->mBuffers[0].mData, sourceAudioBufferList->mBuffers[0].mDataByteSize);
+    }
 
-
+    //start convert
     
+    int64_t delay = swr_get_delay(_converterInfo.swr_ctx, _converterInfo.source.sampleRate) + _converterInfo.source.nb_samples;
     
+    _converterInfo.destination.nb_samples = av_rescale_rnd(delay, _converterInfo.destination.sampleRate, _converterInfo.source.sampleRate, AV_ROUND_UP);
     
+    if (_converterInfo.destination.nb_samples > _converterInfo.destination.max_nb_samples) {
+        
+        av_freep(&_converterInfo.destination.data[0]);
+        int ret = av_samples_alloc(_converterInfo.destination.data,
+                                   &_converterInfo.destination.lineSize,
+                                   _converterInfo.destination.channelCount,
+                                   (int)_converterInfo.destination.nb_samples,
+                                   _converterInfo.destination.sample_fmt,
+                                   1);
+        assert(ret >= 0);
+        if (ret < 0) {
+            return;
+        }
+    }
     
     //do convert
     
-    
-    
+    int out_smaples_per_channel = swr_convert(_converterInfo.swr_ctx,
+                                              _converterInfo.destination.data,
+                                              (int)_converterInfo.destination.nb_samples,
+                                              (const uint8_t **)_converterInfo.source.data,
+                                              (int)_converterInfo.source.nb_samples);
 
+    assert(out_smaples_per_channel >= 0);
     
+    int dst_buf_size = av_samples_get_buffer_size(&_converterInfo.destination.lineSize,
+                                                  _converterInfo.destination.channelCount,
+                                                  out_smaples_per_channel,
+                                                  _converterInfo.destination.sample_fmt,
+                                                  1);
     
+    NSLog(@"dst buf size = %d",dst_buf_size);
 }
 
 

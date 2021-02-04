@@ -13,10 +13,14 @@ NS_ASSUME_NONNULL_BEGIN
 @interface AudioConverter : NSObject
 
 
+
+
+- (instancetype)initWithDestinationFormat:(AudioStreamBasicDescription)destinationFormat;
+
+
 - (void)convertAuidoBufferList:(AudioBufferList *)sourceAudioBufferList
                   sourceFormat:(AudioStreamBasicDescription)sourceFormat
-    destinationAudioBufferList:(AudioBufferList *)destinationAudioBufferList
-             destinationFormat:(AudioStreamBasicDescription)destinationFormat;
+             sourceSampleCount:(int)sourceSampleCount;
 
 
 
