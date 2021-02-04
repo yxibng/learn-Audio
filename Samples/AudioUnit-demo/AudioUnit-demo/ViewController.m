@@ -9,6 +9,7 @@
 #import "AudioUnitRecorder.h"
 #import "AUGraphRecorder.h"
 #import "AudioDevice.h"
+#import "AudioConverter.h"
 
 static BOOL kUseGraph = NO;
 
@@ -19,9 +20,8 @@ static BOOL kUseGraph = NO;
 @property (nonatomic, strong) NSArray<AudioDevice *> *inputDevices;
 @property (nonatomic, strong) AudioDevice *currentInputDevice;
 @property (nonatomic, strong) id<AudioRecorderProtocol>recorder;
-
-
 @property (nonatomic, assign) AudioStreamBasicDescription destinationFormat;
+@property (nonatomic, strong) AudioConverter *audioConverter;
 
 @end
 
@@ -30,7 +30,6 @@ static BOOL kUseGraph = NO;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     /*
      采集双声道，平面型
      */
@@ -76,6 +75,9 @@ static BOOL kUseGraph = NO;
     desc.mReserved = 0;
     _destinationFormat = desc;
     
+    
+    _audioConverter = [[AudioConverter alloc] init];
+    
 }
 
 
@@ -85,6 +87,10 @@ static BOOL kUseGraph = NO;
     UInt32 lengthPerChannel = audioBufferList->mBuffers[0].mDataByteSize;
     
     NSLog(@"sample rate = %f, channelCount = %d, lengthPerChannel = %d", format.mSampleRate, channelCount, lengthPerChannel);
+    
+    AudioBufferList dstList;
+    [_audioConverter convertAuidoBufferList:audioBufferList sourceFormat:format destinationAudioBufferList:&dstList destinationFormat:_destinationFormat];
+    
     
 }
 
