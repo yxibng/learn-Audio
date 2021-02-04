@@ -243,7 +243,18 @@ static enum AVSampleFormat ff_formatFromStreamDesc(AudioStreamBasicDescription s
                                                   _converterInfo.destination.sample_fmt,
                                                   1);
     
-    NSLog(@"dst buf size = %d",dst_buf_size);
+//    NSLog(@"dst buf size = %d",dst_buf_size);
+    
+    
+    static FILE *file;
+    if (!file) {
+        NSString *path = [NSHomeDirectory() stringByAppendingPathComponent:@"audio.pcm"];
+        NSLog(@"path = %@",path);
+        file = fopen([path cStringUsingEncoding:NSUTF8StringEncoding], "a+");
+    }
+    fwrite(_converterInfo.destination.data[0], 1, dst_buf_size, file);
+    
+    
 }
 
 
