@@ -14,6 +14,8 @@ typedef struct {
     int sampleRate;
     int channleCount;
     int64_t bitRate;
+    int capacity;
+    unsigned char *ouput;
 } AudioEncoderInfo;
 
 @interface AudioEncoder ()
@@ -37,6 +39,8 @@ typedef struct {
         opus_encoder_ctl(_encoderInfo.encoder, OPUS_SET_BITRATE(_encoderInfo.bitRate));
         opus_encoder_ctl(_encoderInfo.encoder, OPUS_SET_COMPLEXITY(5));
         opus_encoder_ctl(_encoderInfo.encoder, OPUS_SET_SIGNAL(OPUS_SIGNAL_VOICE));
+        _encoderInfo.capacity = 1276;
+        _encoderInfo.ouput = malloc(_encoderInfo.capacity);
     }
     return self;
 }
@@ -45,23 +49,18 @@ typedef struct {
 
 - (void)encodeData:(void *)data length:(int)length sampleCount:(int)sampleCount {
     
-    opus_int32 max_bytes = 1276;
-    unsigned char *outData = malloc(max_bytes);
-    opus_int32 out_bytes = opus_encode(_encoderInfo.encoder, (const opus_int16 *)data, sampleCount, outData, max_bytes);
+    memset(_encoderInfo.ouput, 0, _encoderInfo.capacity);
+    opus_int32 out_bytes = opus_encode(_encoderInfo.encoder, (const opus_int16 *)data, sampleCount, _encoderInfo.ouput, _encoderInfo.capacity);
     
     if (out_bytes <= 1) {
-        free(outData);
         return;
     } else {
         NSLog(@"out bytes = %d",out_bytes);
     }
     
-    
-    free(outData);
-    
-    
-    
-    
+    if ([self.delegate respondsToSelector:@selector(audioEncoder:gotEncodedData:length:)]) {
+        [self.delegate audioEncoder:self gotEncodedData:_encoderInfo.ouput length:out_bytes];
+    }
 }
 
 

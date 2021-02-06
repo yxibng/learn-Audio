@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		861E9CA525CE3B9400FC0419 /* AudioDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 861E9CA425CE3B9400FC0419 /* AudioDecoder.m */; };
 		8688395525CCF780006AF0C2 /* AudioEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8688395425CCF780006AF0C2 /* AudioEncoder.m */; };
 		868E857E25C93CC0004481D5 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 868E857D25C93CC0004481D5 /* AppDelegate.m */; };
 		868E858125C93CC0004481D5 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 868E858025C93CC0004481D5 /* SceneDelegate.m */; };
@@ -37,6 +38,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		861E9CA325CE3B9400FC0419 /* AudioDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioDecoder.h; sourceTree = "<group>"; };
+		861E9CA425CE3B9400FC0419 /* AudioDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioDecoder.m; sourceTree = "<group>"; };
 		8688395325CCF780006AF0C2 /* AudioEncoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioEncoder.h; sourceTree = "<group>"; };
 		8688395425CCF780006AF0C2 /* AudioEncoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioEncoder.m; sourceTree = "<group>"; };
 		868E857A25C93CC0004481D5 /* AudioUnit-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AudioUnit-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -252,6 +255,8 @@
 				86A1DD8325CB8A9F00CBE846 /* AudioConverter.m */,
 				8688395325CCF780006AF0C2 /* AudioEncoder.h */,
 				8688395425CCF780006AF0C2 /* AudioEncoder.m */,
+				861E9CA325CE3B9400FC0419 /* AudioDecoder.h */,
+				861E9CA425CE3B9400FC0419 /* AudioDecoder.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -682,6 +687,7 @@
 				86F9B3F425C4039E00D646C4 /* ViewController.m in Sources */,
 				86F9B3FC25C4039F00D646C4 /* main.m in Sources */,
 				86F9B3F125C4039E00D646C4 /* AppDelegate.m in Sources */,
+				861E9CA525CE3B9400FC0419 /* AudioDecoder.m in Sources */,
 				86A1DA3325CA455800CBE846 /* AUGraphRecorder.m in Sources */,
 				86AFDEFB25C7D4ED00BB87CA /* AudioUnitRecorder.m in Sources */,
 				86A1DD8425CB8A9F00CBE846 /* AudioConverter.m in Sources */,

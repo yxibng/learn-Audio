@@ -11,12 +11,13 @@
 #import "AudioDevice.h"
 #import "AudioConverter.h"
 #import "AudioEncoder.h"
+#import "AudioDecoder.h"
 #import <AVFoundation/AVFoundation.h>
 
 static BOOL kUseGraph = NO;
 
 
-@interface ViewController ()<AudioRecorderDelegate, AudioConverterDelegate>
+@interface ViewController ()<AudioRecorderDelegate, AudioConverterDelegate, AudioEncoderDelegate, AudioDecoderDelegate>
 
 @property (weak) IBOutlet NSPopUpButton *inputListButton;
 @property (nonatomic, strong) NSArray<AudioDevice *> *inputDevices;
@@ -26,6 +27,7 @@ static BOOL kUseGraph = NO;
 @property (nonatomic, strong) AudioConverter *audioConverter;
 
 @property (nonatomic, strong) AudioEncoder *opusEncoder;
+@property (nonatomic, strong) AudioDecoder *opusDecoder;
 
 
 @end
@@ -76,8 +78,10 @@ static BOOL kUseGraph = NO;
     _audioConverter.delegate = self;
     
     _opusEncoder = [[AudioEncoder alloc] initSampleRate:sampleRate channelCount:channleCount];
+    _opusEncoder.delegate = self;
     
-    
+    _opusDecoder = [[AudioDecoder alloc] initSampleRate:sampleRate channelCount:channleCount];
+    _opusDecoder.delegate = self;
 }
 
 
@@ -100,6 +104,24 @@ gotInt16InterleavedData:(uint8_t *)data
             sampleRate:(int)sampleRate
 {
     [_opusEncoder encodeData:data length:lineSize sampleCount:sampleCount];
+}
+
+
+- (void)audioEncoder:(AudioEncoder *)audioEncoder gotEncodedData:(void *)data length:(int)length {
+    
+    [_opusDecoder decodeData:data length:length];
+}
+
+- (void)audioDecoder:(AudioDecoder *)audioDecoder gotDecodedData:(void *)data length:(int)length {
+    //write data to file
+    static FILE *file;
+    if (!file) {
+        NSString *path = [NSHomeDirectory() stringByAppendingPathComponent:@"decoded_audio.pcm"];
+        NSLog(@"path = %@",path);
+        [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
+        file = fopen([path cStringUsingEncoding:NSUTF8StringEncoding], "a+");
+    }
+    fwrite(data, 1, length, file);
 }
 
 - (IBAction)onClickStart:(id)sender {
