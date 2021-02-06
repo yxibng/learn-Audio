@@ -242,19 +242,32 @@ static enum AVSampleFormat ff_formatFromStreamDesc(AudioStreamBasicDescription s
                                                   out_smaples_per_channel,
                                                   _converterInfo.destination.sample_fmt,
                                                   1);
-    
-//    NSLog(@"dst buf size = %d",dst_buf_size);
-    
-    
+#if 0
+    //write data to file
     static FILE *file;
     if (!file) {
         NSString *path = [NSHomeDirectory() stringByAppendingPathComponent:@"audio.pcm"];
         NSLog(@"path = %@",path);
+        [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
         file = fopen([path cStringUsingEncoding:NSUTF8StringEncoding], "a+");
     }
-    fwrite(_converterInfo.destination.data[0], 1, dst_buf_size, file);
     
-    
+    if (_converterInfo.destination.isPlanar) {
+        //平面型的只写一个声道的数据
+        int channelCount = _converterInfo.destination.channelCount;
+        fwrite(_converterInfo.destination.data[0], 1, dst_buf_size / channelCount, file);
+    } else {
+        fwrite(_converterInfo.destination.data[0], 1, dst_buf_size, file);
+    }
+#endif
+    if ([self.delegate respondsToSelector:@selector(audioConverter:gotInt16InterleavedData:channelCount:lineSize:sampleRate:)]) {
+        [self.delegate audioConverter:self
+              gotInt16InterleavedData:_converterInfo.destination.data[0]
+                         channelCount:_converterInfo.destination.channelCount
+                             lineSize:dst_buf_size
+                           sampleRate:16000];
+    }
+
 }
 
 

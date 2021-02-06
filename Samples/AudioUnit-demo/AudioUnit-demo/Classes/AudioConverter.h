@@ -10,20 +10,23 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AudioConverter;
+@protocol AudioConverterDelegate<NSObject>
+
+- (void)audioConverter:(AudioConverter *)converter gotInt16InterleavedData:(uint8_t *)data channelCount:(int)channelCount
+              lineSize:(int)lineSize
+            sampleRate:(int)sampleRate;
+
+@end
+
 @interface AudioConverter : NSObject
 
-
-
-
 - (instancetype)initWithDestinationFormat:(AudioStreamBasicDescription)destinationFormat;
-
+@property (nonatomic, weak) id<AudioConverterDelegate>delegate;
 
 - (void)convertAuidoBufferList:(AudioBufferList *)sourceAudioBufferList
                   sourceFormat:(AudioStreamBasicDescription)sourceFormat
              sourceSampleCount:(int)sourceSampleCount;
-
-
-
 
 @end
 
