@@ -13,8 +13,10 @@ NS_ASSUME_NONNULL_BEGIN
 @class AudioConverter;
 @protocol AudioConverterDelegate<NSObject>
 
-- (void)audioConverter:(AudioConverter *)converter gotInt16InterleavedData:(uint8_t *)data channelCount:(int)channelCount
+- (void)audioConverter:(AudioConverter *)converter gotInt16InterleavedData:(uint8_t *)data
+          channelCount:(int)channelCount
               lineSize:(int)lineSize
+           sampleCount:(int)sampleCount
             sampleRate:(int)sampleRate;
 
 @end

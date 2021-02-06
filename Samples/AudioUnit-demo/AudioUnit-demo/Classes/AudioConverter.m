@@ -210,7 +210,10 @@ static enum AVSampleFormat ff_formatFromStreamDesc(AudioStreamBasicDescription s
     
     int64_t delay = swr_get_delay(_converterInfo.swr_ctx, _converterInfo.source.sampleRate) + _converterInfo.source.nb_samples;
     
-    _converterInfo.destination.nb_samples = av_rescale_rnd(delay, _converterInfo.destination.sampleRate, _converterInfo.source.sampleRate, AV_ROUND_UP);
+    _converterInfo.destination.nb_samples = av_rescale_rnd(delay,
+                                                           _converterInfo.destination.sampleRate,
+                                                           _converterInfo.source.sampleRate,
+                                                           AV_ROUND_UP);
     
     if (_converterInfo.destination.nb_samples > _converterInfo.destination.max_nb_samples) {
         
@@ -225,6 +228,7 @@ static enum AVSampleFormat ff_formatFromStreamDesc(AudioStreamBasicDescription s
         if (ret < 0) {
             return;
         }
+        _converterInfo.destination.max_nb_samples = _converterInfo.destination.nb_samples;
     }
     
     //do convert
@@ -260,11 +264,12 @@ static enum AVSampleFormat ff_formatFromStreamDesc(AudioStreamBasicDescription s
         fwrite(_converterInfo.destination.data[0], 1, dst_buf_size, file);
     }
 #endif
-    if ([self.delegate respondsToSelector:@selector(audioConverter:gotInt16InterleavedData:channelCount:lineSize:sampleRate:)]) {
+    if ([self.delegate respondsToSelector:@selector(audioConverter:gotInt16InterleavedData:channelCount:lineSize:sampleCount:sampleRate:)]) {
         [self.delegate audioConverter:self
               gotInt16InterleavedData:_converterInfo.destination.data[0]
                          channelCount:_converterInfo.destination.channelCount
                              lineSize:dst_buf_size
+                          sampleCount:out_smaples_per_channel
                            sampleRate:16000];
     }
 

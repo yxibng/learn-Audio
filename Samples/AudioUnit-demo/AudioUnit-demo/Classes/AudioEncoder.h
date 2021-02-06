@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initSampleRate:(int)sampleRate channelCount:(int)channelCount;
 
-
+- (void)encodeData:(void *)data length:(int)length sampleCount:(int)sampleCount;
 
 @end
 

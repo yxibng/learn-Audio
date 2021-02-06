@@ -10,12 +10,13 @@
 #import "AUGraphRecorder.h"
 #import "AudioDevice.h"
 #import "AudioConverter.h"
+#import "AudioEncoder.h"
 #import <AVFoundation/AVFoundation.h>
 
 static BOOL kUseGraph = NO;
 
 
-@interface ViewController ()<AudioRecorderDelegate>
+@interface ViewController ()<AudioRecorderDelegate, AudioConverterDelegate>
 
 @property (weak) IBOutlet NSPopUpButton *inputListButton;
 @property (nonatomic, strong) NSArray<AudioDevice *> *inputDevices;
@@ -23,6 +24,9 @@ static BOOL kUseGraph = NO;
 @property (nonatomic, strong) id<AudioRecorderProtocol>recorder;
 @property (nonatomic, assign) AudioStreamBasicDescription destinationFormat;
 @property (nonatomic, strong) AudioConverter *audioConverter;
+
+@property (nonatomic, strong) AudioEncoder *opusEncoder;
+
 
 @end
 
@@ -64,9 +68,15 @@ static BOOL kUseGraph = NO;
     [_recorder changeDevice:_currentInputDevice.deviceID];
     
     
+    int sampleRate = 16000;
+    int channleCount = 1;
 
-    _destinationFormat = *([[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatInt16 sampleRate:16000 channels:2 interleaved:YES].streamDescription);
+    _destinationFormat = *([[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatInt16 sampleRate:sampleRate channels:channleCount interleaved:YES].streamDescription);
     _audioConverter = [[AudioConverter alloc] initWithDestinationFormat:_destinationFormat];
+    _audioConverter.delegate = self;
+    
+    _opusEncoder = [[AudioEncoder alloc] initSampleRate:sampleRate channelCount:channleCount];
+    
     
 }
 
@@ -82,7 +92,15 @@ static BOOL kUseGraph = NO;
     
 }
 
-
+- (void)audioConverter:(AudioConverter *)converter
+gotInt16InterleavedData:(uint8_t *)data
+          channelCount:(int)channelCount
+              lineSize:(int)lineSize
+           sampleCount:(int)sampleCount
+            sampleRate:(int)sampleRate
+{
+    [_opusEncoder encodeData:data length:lineSize sampleCount:sampleCount];
+}
 
 - (IBAction)onClickStart:(id)sender {
     [_recorder start];
