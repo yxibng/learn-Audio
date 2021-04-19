@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="uPA-lF-0SI">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17701"/>
@@ -679,7 +679,7 @@
                 <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="75" y="0.0"/>
+            <point key="canvasLocation" x="-178" y="0.0"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">
@@ -700,7 +700,7 @@
                 </windowController>
                 <customObject id="Oky-zY-oP4" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="75" y="250"/>
+            <point key="canvasLocation" x="-229" y="246"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="hIz-AP-VOD">
@@ -772,6 +772,102 @@
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="75" y="655"/>
+        </scene>
+        <!--Window Controller-->
+        <scene sceneID="fCh-7i-I4o">
+            <objects>
+                <windowController id="uPA-lF-0SI" sceneMemberID="viewController">
+                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="OR1-ZV-ndd">
+                        <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+                        <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+                        <rect key="contentRect" x="2214" y="313" width="480" height="270"/>
+                        <rect key="screenRect" x="1920" y="0.0" width="1920" height="1055"/>
+                        <view key="contentView" id="uCJ-O9-WzF">
+                            <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </view>
+                        <connections>
+                            <outlet property="delegate" destination="uPA-lF-0SI" id="mpe-kG-d1u"/>
+                        </connections>
+                    </window>
+                    <connections>
+                        <segue destination="syQ-rT-aNI" kind="relationship" relationship="window.shadowedContentViewController" id="uCa-ab-Spj"/>
+                    </connections>
+                </windowController>
+                <customObject id="SBc-cS-Ho1" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="587" y="154"/>
+        </scene>
+        <!--Audio Player View Controller-->
+        <scene sceneID="szZ-2d-5Qt">
+            <objects>
+                <viewController id="syQ-rT-aNI" customClass="AudioPlayerViewController" sceneMemberID="viewController">
+                    <view key="view" id="ZVK-ur-bFN">
+                        <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <stackView distribution="fill" orientation="vertical" alignment="centerX" spacing="18" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mKl-Lq-SXu">
+                                <rect key="frame" x="20" y="87" width="71" height="96"/>
+                                <subviews>
+                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="zwh-8K-Bbr">
+                                        <rect key="frame" x="4" y="69" width="64" height="32"/>
+                                        <buttonCell key="cell" type="push" title="start" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s3P-9L-sl9">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="onClickStart:" target="syQ-rT-aNI" id="buX-u3-L5u"/>
+                                        </connections>
+                                    </button>
+                                    <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="tQf-li-77L">
+                                        <rect key="frame" x="-3" y="34" width="78" height="25"/>
+                                        <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Si9-Oy-cEE" id="EZf-y3-Brl">
+                                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="menu"/>
+                                            <menu key="menu" id="FxU-b1-kM1">
+                                                <items>
+                                                    <menuItem title="Item 1" state="on" id="Si9-Oy-cEE"/>
+                                                    <menuItem title="Item 2" id="kjc-M9-YAA"/>
+                                                    <menuItem title="Item 3" id="Qd2-SG-kJS"/>
+                                                </items>
+                                            </menu>
+                                        </popUpButtonCell>
+                                    </popUpButton>
+                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Rcy-1E-Kqm">
+                                        <rect key="frame" x="5" y="-7" width="62" height="32"/>
+                                        <buttonCell key="cell" type="push" title="stop" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pbw-nz-tJZ">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="onClickStop:" target="syQ-rT-aNI" id="imb-Ta-22Q"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <visibilityPriorities>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                </visibilityPriorities>
+                                <customSpacing>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                </customSpacing>
+                            </stackView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="mKl-Lq-SXu" firstAttribute="leading" secondItem="ZVK-ur-bFN" secondAttribute="leading" constant="20" id="4M6-Ll-sVg"/>
+                            <constraint firstItem="mKl-Lq-SXu" firstAttribute="centerY" secondItem="ZVK-ur-bFN" secondAttribute="centerY" id="GmE-mP-JEt"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="outputListButton" destination="tQf-li-77L" id="Xh8-5H-3OT"/>
+                    </connections>
+                </viewController>
+                <customObject id="VL9-lV-rwd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="580" y="624"/>
         </scene>
     </scenes>
 </document>

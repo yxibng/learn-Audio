@@ -87,10 +87,10 @@ static BOOL kUseGraph = NO;
 
 - (void)audioRecorder:(id)audioRecorder didCaptureAudioBufferList:(AudioBufferList *)audioBufferList format:(AudioStreamBasicDescription)format sampleCount:(int)sampleCount {
     
-//    UInt32 channelCount = audioBufferList->mNumberBuffers;
-//    UInt32 lengthPerChannel = audioBufferList->mBuffers[0].mDataByteSize;
+    UInt32 channelCount = audioBufferList->mNumberBuffers;
+    UInt32 lengthPerChannel = audioBufferList->mBuffers[0].mDataByteSize;
     
-//    NSLog(@"sample rate = %f, channelCount = %d, lengthPerChannel = %d", format.mSampleRate, channelCount, lengthPerChannel);
+    NSLog(@"sample rate = %f, channelCount = %d, lengthPerChannel = %d", format.mSampleRate, channelCount, lengthPerChannel);
     [_audioConverter convertAuidoBufferList:audioBufferList sourceFormat:format sourceSampleCount:sampleCount];
     
     

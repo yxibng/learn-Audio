@@ -29,6 +29,8 @@
 		86A1DD8425CB8A9F00CBE846 /* AudioConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 86A1DD8325CB8A9F00CBE846 /* AudioConverter.m */; };
 		86AFDEFB25C7D4ED00BB87CA /* AudioUnitRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 86AFDEFA25C7D4ED00BB87CA /* AudioUnitRecorder.m */; };
 		86E4195C25C7EC3B0041CA0C /* AudioDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 86E4195B25C7EC3B0041CA0C /* AudioDevice.m */; };
+		86EDF1F826292C450094F1F3 /* AUGraphPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 86EDF1F726292C450094F1F3 /* AUGraphPlayer.m */; };
+		86EDF386262D643F0094F1F3 /* AudioPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 86EDF385262D643F0094F1F3 /* AudioPlayerViewController.m */; };
 		86F9B3F125C4039E00D646C4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 86F9B3F025C4039E00D646C4 /* AppDelegate.m */; };
 		86F9B3F425C4039E00D646C4 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 86F9B3F325C4039E00D646C4 /* ViewController.m */; };
 		86F9B3F625C4039F00D646C4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 86F9B3F525C4039F00D646C4 /* Assets.xcassets */; };
@@ -200,6 +202,10 @@
 		86AFDEFA25C7D4ED00BB87CA /* AudioUnitRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioUnitRecorder.m; sourceTree = "<group>"; };
 		86E4195A25C7EC3B0041CA0C /* AudioDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioDevice.h; sourceTree = "<group>"; };
 		86E4195B25C7EC3B0041CA0C /* AudioDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioDevice.m; sourceTree = "<group>"; };
+		86EDF1F626292C450094F1F3 /* AUGraphPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AUGraphPlayer.h; sourceTree = "<group>"; };
+		86EDF1F726292C450094F1F3 /* AUGraphPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AUGraphPlayer.m; sourceTree = "<group>"; };
+		86EDF384262D643F0094F1F3 /* AudioPlayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioPlayerViewController.h; sourceTree = "<group>"; };
+		86EDF385262D643F0094F1F3 /* AudioPlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioPlayerViewController.m; sourceTree = "<group>"; };
 		86F9B3EC25C4039E00D646C4 /* AudioUnit-demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AudioUnit-demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		86F9B3EF25C4039E00D646C4 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		86F9B3F025C4039E00D646C4 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -257,6 +263,8 @@
 				8688395425CCF780006AF0C2 /* AudioEncoder.m */,
 				861E9CA325CE3B9400FC0419 /* AudioDecoder.h */,
 				861E9CA425CE3B9400FC0419 /* AudioDecoder.m */,
+				86EDF1F626292C450094F1F3 /* AUGraphPlayer.h */,
+				86EDF1F726292C450094F1F3 /* AUGraphPlayer.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -562,6 +570,8 @@
 				86F9B3F025C4039E00D646C4 /* AppDelegate.m */,
 				86F9B3F225C4039E00D646C4 /* ViewController.h */,
 				86F9B3F325C4039E00D646C4 /* ViewController.m */,
+				86EDF384262D643F0094F1F3 /* AudioPlayerViewController.h */,
+				86EDF385262D643F0094F1F3 /* AudioPlayerViewController.m */,
 				86F9B3F525C4039F00D646C4 /* Assets.xcassets */,
 				86F9B3F725C4039F00D646C4 /* Main.storyboard */,
 				86F9B3FA25C4039F00D646C4 /* Info.plist */,
@@ -692,6 +702,8 @@
 				86AFDEFB25C7D4ED00BB87CA /* AudioUnitRecorder.m in Sources */,
 				86A1DD8425CB8A9F00CBE846 /* AudioConverter.m in Sources */,
 				8688395525CCF780006AF0C2 /* AudioEncoder.m in Sources */,
+				86EDF386262D643F0094F1F3 /* AudioPlayerViewController.m in Sources */,
+				86EDF1F826292C450094F1F3 /* AUGraphPlayer.m in Sources */,
 				86E4195C25C7EC3B0041CA0C /* AudioDevice.m in Sources */,
 				86F9B41225C7A02D00D646C4 /* AudioUtil.m in Sources */,
 			);
